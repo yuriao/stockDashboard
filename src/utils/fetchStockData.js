@@ -1,7 +1,9 @@
 /**
- * Fetch both:
- *   1) Historical daily bars for the last ~6 months
+ * Fetch:
+ *   1) Historical daily bars for the last 10 years
  *   2) A snapshot (current price, prev close, volume)
+ *   3) rsi,macd
+ *   4) finanical
  *
  * Returns an object shaped like:
  * {
@@ -13,6 +15,10 @@
  *   news: [],          // you could call Polygon’s /v2/reference/news endpoint
  * }
  */
+
+import './stockTimeSeries.js'
+import './fundamentals.js'
+
 export default fetchStockData = async (symbol) => {
   
   const API_KEY = process.env.REACT_APP_POLYGON_API_KEY
@@ -36,128 +42,40 @@ export default fetchStockData = async (symbol) => {
   // 2.1 Build the URLs
   //    GET https://api.polygon.io/v2/aggs/ticker/{ticker}/range/1/day/{from}/{to}?sort=asc&limit=5000&apiKey=...
   const aggUrl = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/1/day/${fromDate}/${toDate}` + `?adjusted=true&sort=asc&limit=5000&apiKey=${API_KEY}`
-
-  //    GET https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/{ticker}?apiKey=...
   const snapshotUrl = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${symbol}` + `?apiKey=${API_KEY}`
-
-  const macdUrl=`https://api.polygon.io/v1/indicators/macd/${symbol}`+`?timespan=day&adjusted=true&short_window=12&long_window=26&signal_window=9&series_type=close&order=asc&limit=90&` + `apiKey=${API_KEY}`
-  const rsiUrl=`https://api.polygon.io/v1/indicators/rsi/${symbol}`+`?timespan=day&adjusted=true&window=14&series_type=close&order=asc&limit=90&adjusted=true&` + `apiKey=${API_KEY}`
+  const macdUrl=`https://api.polygon.io/v1/indicators/macd/${symbol}`+`?timespan=day&adjusted=true&short_window=12&long_window=26&signal_window=9&series_type=close&order=asc&limit=5000&` + `apiKey=${API_KEY}`
+  const rsiUrl=`https://api.polygon.io/v1/indicators/rsi/${symbol}`+`?timespan=day&adjusted=true&window=14&series_type=close&order=asc&limit=5000&adjusted=true&` + `apiKey=${API_KEY}`
   const financialUrl=`https://api.polygon.io/vX/reference/financials?ticker=${symbol}`+`&order=desc&limit=10&sort=filing_date&` + `apiKey=${API_KEY}`
-  
+  const overviewUrl=`https://api.polygon.io/v3/reference/tickers/${symbol}`+`?` + `apiKey=${API_KEY}`
+  const SMA10Url=`https://api.polygon.io/v1/indicators/sma/${symbol}`+`?timespan=day&adjusted=true&window=10&series_type=close&order=desc&limit=5000&` +`apiKey=${API_KEY}`
+  const SMA50Url=`https://api.polygon.io/v1/indicators/sma/${symbol}`+`?timespan=day&adjusted=true&window=50&series_type=close&order=desc&limit=5000&` +`apiKey=${API_KEY}`
+  const SMA200Url=`https://api.polygon.io/v1/indicators/sma/${symbol}`+`?timespan=day&adjusted=true&window=200&series_type=close&order=desc&limit=5000&` +`apiKey=${API_KEY}`
+
   // 2.2 Fire both requests in parallel
-  const [aggRes, snapRes,rsiRes, macdRes,finRes] = await Promise.all([
+  const [aggRes, snapRes,rsiRes, macdRes,finRes,overviewRes,SMA10Res,SMA50Res, SMA200Res] = await Promise.all([
     fetch(aggUrl),
     fetch(snapshotUrl),
     fetch(rsiUrl),
     fetch(macdUrl),
     fetch(financialUrl),
+    fetch(overviewUrl),
+    fetch(SMA10Url),
+    fetch(SMA50Url),
+    fetch(SMA200Url),
   ])
-  
-  if (!aggRes.ok) {
-    throw new Error(`Aggregates request failed: ${aggRes.statusText}`)
-  }
-  if (!snapRes.ok) {
-    throw new Error(`Snapshot request failed: ${snapRes.statusText}`)
-  }
-  if (!rsiRes.ok) {
-    throw new Error(`Snapshot request failed: ${snapRes.statusText}`)
-  }
-  if (!macdRes.ok) {
-    throw new Error(`Snapshot request failed: ${snapRes.statusText}`)
-  }
-  if (!finRes.ok) {
-    throw new Error(`Snapshot request failed: ${snapRes.statusText}`)
-  }
 
   const aggJson = await aggRes.json()
   const snapJson = await snapRes.json()
   const rsiJson = await rsiRes.json()
   const macdJson = await macdRes.json()
   const finJson = await macdRes.json()
+  const ovJson = await macdRes.json()
+  const s10Json = await macdRes.json()
+  const s50Json = await macdRes.json()
+  const s200Json = await macdRes.json()
 
-  // 5. Parse the aggregates into an array of { date, close }
-  let priceSeries = []
-  if (Array.isArray(aggJson.results)) {
-    priceSeries = aggJson.results.map((bar) => {
-      // Polygon returns ts in milliseconds since epoch
-      const dateObj = new Date(bar.t)
-      const yyyy = dateObj.getFullYear()
-      const mm = String(dateObj.getMonth() + 1).padStart(2, '0')
-      const dd = String(dateObj.getDate()).padStart(2, '0')
-      return {
-        date: `${yyyy}-${mm}-${dd}`,
-        close: bar.vw,
-      }
-    })
-  }
-
-  let priceSeriesWindowed=windowSeries(priceSeries)
-
-  let rsiSeries = []
-  if (Array.isArray(rsiJson.results.values)) {
-    rsiSeries = rsiJson.results.values.map((bar) => {
-      // Polygon returns ts in milliseconds since epoch
-      const dateObj = new Date(bar.timestamp)
-      const yyyy = dateObj.getFullYear()
-      const mm = String(dateObj.getMonth() + 1).padStart(2, '0')
-      const dd = String(dateObj.getDate()).padStart(2, '0')
-      return {
-        date: `${yyyy}-${mm}-${dd}`,
-        close: bar.value,
-      }
-    })
-  }
-
-
-  let macdSeries = []
-  if (Array.isArray(macdJson.results.values)) {
-    macdSeries = macdJson.results.values.map((bar) => {
-      // Polygon returns ts in milliseconds since epoch
-      const dateObj = new Date(bar.timestamp)
-      const yyyy = dateObj.getFullYear()
-      const mm = String(dateObj.getMonth() + 1).padStart(2, '0')
-      const dd = String(dateObj.getDate()).padStart(2, '0')
-      return {
-        date: `${yyyy}-${mm}-${dd}`,
-        close: bar.histogram,
-      }
-    })
-  }
-
-  console.log(rsiSeries)
-  // 6. Extract snapshot data:
-  //    • snapJson.ticker.day.c = current day’s close (≈ current price)
-  //    • snapJson.ticker.day.o = today’s open
-  //    • snapJson.ticker.day.h = today’s high
-  //    • snapJson.ticker.day.l = today’s low
-  //    • snapJson.ticker.day.v = today’s volume
-  //    • snapJson.ticker.prevDay.c = previous market close
-  let currentPrice = null
-  let prevClose = null
-  let volumeToday = null
-
-  if (
-    snapJson.ticker &&
-    snapJson.ticker.day &&
-    typeof snapJson.ticker.day.c === 'number'
-  ) {
-    currentPrice = snapJson.ticker.day.c
-    volumeToday = snapJson.ticker.day.v
-  }
-
-  if (
-    snapJson.ticker &&
-    snapJson.ticker.prevDay &&
-    typeof snapJson.ticker.prevDay.c === 'number'
-  ) {
-    prevClose = snapJson.ticker.prevDay.c
-  }
-
-  // 7. Compute dailyChange (%) if both currentPrice & prevClose exist
-  let dailyChangePct = null
-  if (currentPrice !== null && prevClose !== null && prevClose !== 0) {
-    dailyChangePct = ((currentPrice - prevClose) / prevClose * 100).toFixed(2)
-  }
+  let timeSeriesDat = stockTimeSeries(aggJson, rsiJson, macdJson,s10Json,s50Json,s200Json)
+  let fundamentals = fundamentals(snapJson,ovJson,finJson)
 
   // 
   // 8. (Optional) If you had an endpoint for beta, technicals, fundamentals, peers, news, etc.,
