@@ -16,20 +16,15 @@ export default function windowSeries(data) {
     return d;
   };
 
-  const horizons = {
-    '1m':  backDate(latest, { months: 1 }),
-    '3m':  backDate(latest, { months: 3 }),
-    '6m':  backDate(latest, { months: 6 }),
-    '1y':  backDate(latest, { years: 1  }),
-    '5y':  backDate(latest, { years: 5  }),
-    '10y': backDate(latest, { years: 10 }),
+  //console.log(series)
+  const output = {
+    oneM:  series.filter(({ time }) => time >= backDate(latest,{months:1})),
+    threeM:  series.filter(({ time }) => time >= backDate(latest,{months:3})),
+    sixM:  series.filter(({ time }) => time >= backDate(latest,{months:6})),
+    oneY:  series.filter(({ time }) => time >= backDate(latest,{years:1})),
+    threeY:  series.filter(({ time }) => time >= backDate(latest,{years:3})),
+    fiveY: series.filter(({ time }) => time >= backDate(latest,{years:5})),
   };
 
-  // 2 ️⃣  Build the output object by filtering once per horizon
-  return Object.fromEntries(
-    Object.entries(horizons).map(([key, cutoff]) => [
-      key,
-      series.filter(({ time }) => time >= cutoff),
-    ]),
-  );
+  return output
 }

@@ -1,3 +1,5 @@
+import windowSeries from './windowSeries.js'
+
 export default function stockTimeSeries(aggJson, rsiJson, macdJson,s10Json,s50Json,s200Json){
     // 5. Parse the aggregates into an array of { date, close }
   let priceSeries = []
@@ -9,8 +11,8 @@ export default function stockTimeSeries(aggJson, rsiJson, macdJson,s10Json,s50Js
       const mm = String(dateObj.getMonth() + 1).padStart(2, '0')
       const dd = String(dateObj.getDate()).padStart(2, '0')
       return {
-        date: `${yyyy}-${mm}-${dd}`,
-        close: bar.c,
+        time: `${yyyy}-${mm}-${dd}`,
+        value: bar.c,
       }
     })
   }
@@ -24,8 +26,8 @@ export default function stockTimeSeries(aggJson, rsiJson, macdJson,s10Json,s50Js
       const mm = String(dateObj.getMonth() + 1).padStart(2, '0')
       const dd = String(dateObj.getDate()).padStart(2, '0')
       return {
-        date: `${yyyy}-${mm}-${dd}`,
-        close: bar.v,
+        time: `${yyyy}-${mm}-${dd}`,
+        value: bar.v,
       }
     })
   }
@@ -39,8 +41,8 @@ export default function stockTimeSeries(aggJson, rsiJson, macdJson,s10Json,s50Js
       const mm = String(dateObj.getMonth() + 1).padStart(2, '0')
       const dd = String(dateObj.getDate()).padStart(2, '0')
       return {
-        date: `${yyyy}-${mm}-${dd}`,
-        close: bar.value,
+        time: `${yyyy}-${mm}-${dd}`,
+        value: bar.value,
       }
     })
   }
@@ -55,8 +57,8 @@ export default function stockTimeSeries(aggJson, rsiJson, macdJson,s10Json,s50Js
       const mm = String(dateObj.getMonth() + 1).padStart(2, '0')
       const dd = String(dateObj.getDate()).padStart(2, '0')
       return {
-        date: `${yyyy}-${mm}-${dd}`,
-        close: bar.histogram,
+        time: `${yyyy}-${mm}-${dd}`,
+        value: bar.histogram,
       }
     })
   }
@@ -70,8 +72,8 @@ export default function stockTimeSeries(aggJson, rsiJson, macdJson,s10Json,s50Js
       const mm = String(dateObj.getMonth() + 1).padStart(2, '0')
       const dd = String(dateObj.getDate()).padStart(2, '0')
       return {
-        date: `${yyyy}-${mm}-${dd}`,
-        close: bar.value,
+        time: `${yyyy}-${mm}-${dd}`,
+        value: bar.value,
       }
     })
   }
@@ -85,8 +87,8 @@ export default function stockTimeSeries(aggJson, rsiJson, macdJson,s10Json,s50Js
       const mm = String(dateObj.getMonth() + 1).padStart(2, '0')
       const dd = String(dateObj.getDate()).padStart(2, '0')
       return {
-        date: `${yyyy}-${mm}-${dd}`,
-        close: bar.value,
+        time: `${yyyy}-${mm}-${dd}`,
+        value: bar.value,
       }
     })
   }
@@ -100,8 +102,8 @@ export default function stockTimeSeries(aggJson, rsiJson, macdJson,s10Json,s50Js
       const mm = String(dateObj.getMonth() + 1).padStart(2, '0')
       const dd = String(dateObj.getDate()).padStart(2, '0')
       return {
-        date: `${yyyy}-${mm}-${dd}`,
-        close: bar.value,
+        time: `${yyyy}-${mm}-${dd}`,
+        value: bar.value,
       }
     })
   }

@@ -13,73 +13,7 @@ import {
 import { Card, Button, Input, Table } from 'antd'
 import 'antd/dist/reset.css' // Ant Design reset (v5+)
 import './App.css'
-
-// -----------------------------------------------------------------------------
-// Reusable components (unchanged):
-// -----------------------------------------------------------------------------
-
-function StockChart({ data, title, width, height }) {
-  return (
-    <Card style={{ marginTop: 1 }}>
-      <h3 style={{ marginBottom: 1 }}>{title}</h3>
-      <ResponsiveContainer width={width} height={height}>
-        <LineChart data={data.price} margin={{ top: 1, right: 1, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis domain={['dataMin', 'dataMax']} />
-          <Tooltip />
-          <Line type="monotone" dataKey="close" stroke="#1890ff" dot={false} />
-        </LineChart>
-
-        <LineChart data={data} margin={{ top: 1, right: 1, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis domain={['dataMin', 'dataMax']} />
-          <Tooltip />
-          <Line type="monotone" dataKey="close" stroke="#1890ff" dot={false} />
-        </LineChart>
-
-        <LineChart data={data} margin={{ top: 1, right: 1, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis domain={['dataMin', 'dataMax']} />
-          <Tooltip />
-          <Line type="monotone" dataKey="close" stroke="#1890ff" dot={false} />
-        </LineChart>
-      </ResponsiveContainer>
-
-      <Container>
-        <div style={{display: 'grid',gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',gap: 16,}}>
-          <div>
-            <h5 style={{ color: '#888', marginBottom: 4 }}>Current Price</h5>
-            <p>{data.kpis.currentPrice || '-'}</p>
-          </div>
-          <div>
-            <h5 style={{ color: '#888', marginBottom: 4 }}>Daily Change</h5>
-            <p>{data.kpis.dailyChange || '-'}%</p>
-          </div>
-          <div>
-            <h5 style={{ color: '#888', marginBottom: 4 }}>Volume</h5>
-            <p>{data.kpis.volume || '-'}</p>
-          </div>
-          <div>
-            <h5 style={{ color: '#888', marginBottom: 4 }}>P/E Ratio</h5>
-            <p>{data.fundamentals.pe || '-'}</p>
-          </div>
-          <div>
-            <h5 style={{ color: '#888', marginBottom: 4 }}>ROE</h5>
-            <p>{data.fundamentals.roe || '-'}%</p>
-          </div>
-          <div>
-            <h5 style={{ color: '#888', marginBottom: 4 }}>Debt/Equity</h5>
-            <p>{data.fundamentals.debtEquity || '-'}x</p>
-          </div>
-        </div>
-      </Container>
-    </Card>
-    
-  )
-}
+import fetchStockData from './utils/fetchStockData.js'
 
 // -----------------------------------------------------------------------------
 // Main App (mostly unchanged, except we now call our new fetchStockData)
@@ -101,11 +35,15 @@ export default function App() {
   const loadData = async () => {
     setLoading(true)
     setError(null)
+    
     try {
+      console.log('here 1')
       const json = await fetchStockData(symbol)
+      console.log('here 2')
       setData(json)
     } catch (err) {
       setError(err.message)
+      console.log(err)
     } finally {
       setLoading(false)
     }
@@ -117,8 +55,8 @@ export default function App() {
 
   return (
     <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      {/* Symbol selector */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      
+      {/*<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <Input
           value={symbol}
           onChange={(e) => setSymbol(e.target.value.toUpperCase())}
@@ -145,7 +83,7 @@ export default function App() {
             }}
           >
               <div>
-                {/* Fundamentals */}
+                
                 <Card style={{ marginBottom: 8 }}>
                   <div
                     style={{
@@ -182,7 +120,7 @@ export default function App() {
                 </Card>
             </div>
 
-              {/* Price and Technical Indicators */}
+              
               <div
                 style={{
                   display: 'grid',
@@ -197,39 +135,7 @@ export default function App() {
               </div>
             </div>
 
-      </div>
-      
-      
-
-      
-
-      
-
-      {/* News & Sentiment */}
-      <Card style={{ marginTop: 16 }}>
-        <h3 style={{ marginBottom: 16 }}>Latest News & Sentiment</h3>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {data.news.map((item, idx) => (
-            <li key={idx} style={{ marginBottom: 12 }}>
-              <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#1890ff', fontWeight: 500 }}
-              >
-                {item.headline}
-              </a>
-              <p style={{ color: '#888', fontSize: '0.85rem', margin: 4 }}>
-                {item.sentiment}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </Card>
-
-      {error && (
-        <p style={{ color: 'red', marginTop: 16 }}>Error: {error}</p>
-      )}
-    </div>
+      </div>*/}
+    </div>  
   )
 }
