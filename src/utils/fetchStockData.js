@@ -83,26 +83,15 @@ export default async function fetchStockData (symbol){
   // 8. (Optional) If you had an endpoint for beta, technicals, fundamentals, peers, news, etc.,
   //    you would fire those here. For now, we’ll leave them null or empty.
   return {
-    prices_1m: timeSeriesDat.priceSeriesWindowed['oneM'],
-    prices_3m: timeSeriesDat.priceSeriesWindowed['threeM'],
-    prices_6m: timeSeriesDat.priceSeriesWindowed['sixM'],
-    prices_1y: timeSeriesDat.priceSeriesWindowed['oneY'],
-    prices_3y: timeSeriesDat.priceSeriesWindowed['threeY'],
-    prices_5y: timeSeriesDat.priceSeriesWindowed['fiveY'],
-
-    rsi_1m: timeSeriesDat.rsiSeriesWindowed['oneM'],
-    rsi_3m: timeSeriesDat.rsiSeriesWindowed['threeM'],
-    rsi_6m: timeSeriesDat.rsiSeriesWindowed['sixM'],
-    rsi_1y: timeSeriesDat.rsiSeriesWindowed['oneY'],
-    rsi_3y: timeSeriesDat.rsiSeriesWindowed['threeY'],
-    rsi_5y: timeSeriesDat.rsiSeriesWindowed['fiveY'],
-
-    macd_1m: timeSeriesDat.rsiSeriesWindowed['oneM'],
-    macd_3m: timeSeriesDat.rsiSeriesWindowed['threeM'],
-    macd_6m: timeSeriesDat.rsiSeriesWindowed['sixM'],
-    macd_1y: timeSeriesDat.rsiSeriesWindowed['oneY'],
-    macd_3y: timeSeriesDat.rsiSeriesWindowed['threeY'],
-    macd_5y: timeSeriesDat.rsiSeriesWindowed['fiveY'],
-    
+    price: timeSeriesDat.priceSeriesWindowed,
+    rsi: timeSeriesDat.rsiSeriesWindowed,
+    macd: timeSeriesDat.macdSeriesWindowed,
+    vol: timeSeriesDat.volSeriesWindowed,
+    sma10: timeSeriesDat.s10SeriesWindowed,
+    sma50: timeSeriesDat.s50SeriesWindowed,
+    sma200: timeSeriesDat.s200SeriesWindowed,
+    marketCap: fundamental.marketCap,
+    eps: fundamental.eps,
+    pe:fundamental.pe
   }
 }
