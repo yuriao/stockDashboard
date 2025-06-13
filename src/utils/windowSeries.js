@@ -3,7 +3,7 @@ export default function windowSeries(data) {
 
   // 1 ️⃣  Normalise and sort (oldest → newest)
   const series = [...data]
-    .map(d => ({ time: new Date(d.time), price: d.value }))
+    .map(d => ({ time: new Date(d.time), value: d.value }))
     .sort((a, b) => a.time - b.time);
 
   const latest = series.at(-1).time;

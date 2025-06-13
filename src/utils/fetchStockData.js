@@ -29,11 +29,11 @@ export default async function fetchStockData (symbol){
     
   }
   
-  // 1. Compute date range: from ~3 months ago until today
+  // 1. Compute date range: from ~5y ago until today
   const now = new Date()
   const monthsAgo = new Date(
-    now.getFullYear(),
-    now.getMonth() - 3,
+    now.getFullYear()- 5,
+    now.getMonth() ,
     now.getDate()
   )
   const toDate = now.toISOString().split('T')[0]       // YYYY-MM-DD
