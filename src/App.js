@@ -6,7 +6,7 @@ import 'antd/dist/reset.css' // Ant Design reset (v5+)
 import './App.css'
 import fetchStockData from './utils/fetchStockData.js'
 import StockChart from './components/StockChart.js'
-
+import LLMPredictionPanel from './components/LLMPredictionPanel.js'
 // -----------------------------------------------------------------------------
 // Main App (mostly unchanged, except we now call our new fetchStockData)
 // -----------------------------------------------------------------------------
